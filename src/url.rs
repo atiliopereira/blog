@@ -1,10 +1,12 @@
+const DOCUMENT_ROOT: &str = "documents/";
+
 struct DocumentUrl<'a> {
     pub url: &'a str,
     pub document_path: &'a str,
 }
 
 const URLS: [DocumentUrl; 2] = [
-    DocumentUrl { url: "home/", document_path: "home.html" },
+    DocumentUrl { url: "/home", document_path: "home.html" },
     DocumentUrl { url: "/blog", document_path: "blog.html" },
 ];
 
@@ -16,11 +18,20 @@ pub enum StatusCode {
     NotFound,
 }
 
-pub fn handle_url(url: &str) -> Option<(&str, StatusCode)> {
+pub fn get_status_code_str(status_code: &StatusCode) -> &'static str {
+    match status_code {
+        StatusCode::Ok => "200 OK",
+        StatusCode::NotFound => "404 Not Found",
+    }   
+}
+
+pub fn handle_url(url: &str) -> Option<(String, StatusCode)> {
     for document_url in URLS {
         if document_url.url == url {
-            return Some((document_url.document_path, StatusCode::Ok));
+            let path = format!("{}{}", DOCUMENT_ROOT, document_url.document_path);
+            return Some((path, StatusCode::Ok));
         }
     }
-    return Some((NOT_FOUND_DOCUMENT_PATH, StatusCode::NotFound))
+    let path = format!("{}{}", DOCUMENT_ROOT, NOT_FOUND_DOCUMENT_PATH);
+    return Some((path, StatusCode::NotFound));
 }
